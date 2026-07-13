@@ -1,0 +1,74 @@
+name: Build local Dokploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Define lowercase image name
+        shell: bash
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/dokploy-local" >> "$GITHUB_ENV"
+
+      - name: Prepare production environment
+        shell: bash
+        run: |
+          cp apps/dokploy/.env.production.example .env.production
+          cp apps/dokploy/.env.production.example apps/dokploy/.env.production
+
+      - name: Verify local-only policy
+        shell: bash
+        run: |
+          set -e
+
+          if grep -RInE \
+            'licenses-api\.dokploy\.com|/licenses/(validate|activate|deactivate)|LICENSE_KEY_URL' \
+            packages/server/src apps/dokploy \
+            --exclude=openapi.json
+          then
+            echo "Remote license connection detected"
+            exit 1
+          fi
+
+          grep -q \
+            'hasValidLicense = async.*true' \
+            packages/server/src/services/proprietary/license-key.ts
+
+          echo "Local-only policy verified"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: $53
+          password: $54
+
+      - name: Build and publish Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            $55:latest
+            $55:$56
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
