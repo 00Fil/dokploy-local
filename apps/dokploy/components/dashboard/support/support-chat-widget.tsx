@@ -38,7 +38,9 @@ export function SupportChatWidget() {
       await utils.support.myConversation.invalidate();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to send message",
+        error instanceof Error
+          ? error.message
+          : "Impossibile inviare il messaggio",
       );
     }
   };
@@ -49,16 +51,16 @@ export function SupportChatWidget() {
         <Card className="w-[min(390px,calc(100vw-32px))] overflow-hidden shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between border-b p-4">
             <div>
-              <CardTitle>Support</CardTitle>
+              <CardTitle>Assistenza</CardTitle>
               <p className="mt-1 text-xs text-muted-foreground">
-                We usually reply here shortly.
+                Di solito rispondiamo qui in breve tempo.
               </p>
             </div>
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={() => setOpen(false)}
-              aria-label="Close support chat"
+              aria-label="Chiudi la chat di assistenza"
             >
               <X />
             </Button>
@@ -68,8 +70,9 @@ export function SupportChatWidget() {
               <div className="flex flex-col gap-3 pr-3">
                 {!conversation?.messages.length && (
                   <div className="rounded-lg border border-dashed bg-background p-4 text-center text-sm text-muted-foreground">
-                    Tell us what you need help with. Your organization admins
-                    will see this conversation.
+                    Descrivi il problema per cui ti serve aiuto. Gli
+                    amministratori della tua organizzazione potranno vedere
+                    questa conversazione.
                   </div>
                 )}
                 {conversation?.messages.map((message) => {
@@ -94,7 +97,7 @@ export function SupportChatWidget() {
                           {message.body}
                         </p>
                         <p className="mt-1 text-[11px] opacity-65">
-                          {new Date(message.createdAt).toLocaleString()}
+                          {new Date(message.createdAt).toLocaleString("it-IT")}
                         </p>
                       </div>
                     </div>
@@ -113,7 +116,7 @@ export function SupportChatWidget() {
                     void submit();
                   }
                 }}
-                placeholder="Write a message…"
+                placeholder="Scrivi un messaggio…"
                 className="min-h-11 max-h-28 resize-none"
               />
               <Button
@@ -121,7 +124,7 @@ export function SupportChatWidget() {
                 onClick={() => void submit()}
                 disabled={!body.trim()}
                 isLoading={isPending}
-                aria-label="Send message"
+                aria-label="Invia messaggio"
               >
                 <Send />
               </Button>
@@ -133,7 +136,9 @@ export function SupportChatWidget() {
         size="icon-lg"
         className="rounded-full shadow-lg"
         onClick={() => setOpen((value) => !value)}
-        aria-label={open ? "Close support chat" : "Open support chat"}
+        aria-label={
+          open ? "Chiudi la chat di assistenza" : "Apri la chat di assistenza"
+        }
       >
         {open ? <X /> : <MessageCircle />}
       </Button>

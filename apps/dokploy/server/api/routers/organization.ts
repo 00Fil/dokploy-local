@@ -33,7 +33,8 @@ export const organizationRouter = createTRPCRouter({
       if (ctx.user.role !== "owner" && ctx.user.role !== "admin") {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Only organization administrators can update custom CSS",
+          message:
+            "Solo gli amministratori dell’organizzazione possono modificare il CSS personalizzato",
         });
       }
       const [result] = await db

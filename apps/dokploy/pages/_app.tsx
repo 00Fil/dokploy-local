@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import NextTopLoader from "nextjs-toploader";
 import type { ReactElement, ReactNode } from "react";
 import { SearchCommand } from "@/components/dashboard/search-command";
+import { ItalianLocalizationProvider } from "@/components/localization/italian-localization-provider";
 import { WhitelabelingProvider } from "@/components/proprietary/whitelabeling/whitelabeling-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,49 +17,50 @@ import { api } from "@/utils/api";
 const inter = Inter({ subsets: ["latin"] });
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-	getLayout?: (page: ReactElement) => ReactNode;
-	theme?: string;
+  getLayout?: (page: ReactElement) => ReactNode;
+  theme?: string;
 };
 
 type AppPropsWithLayout = AppProps & {
-	Component: NextPageWithLayout;
+  Component: NextPageWithLayout;
 };
 
 const MyApp = ({
-	Component,
-	pageProps: { ...pageProps },
+  Component,
+  pageProps: { ...pageProps },
 }: AppPropsWithLayout) => {
-	const getLayout = Component.getLayout ?? ((page) => page);
+  const getLayout = Component.getLayout ?? ((page) => page);
 
-	return (
-		<>
-			<style jsx global>
-				{`
-					:root {
-						--font-inter: ${inter.style.fontFamily};
-					}
-				`}
-			</style>
-			<Head>
-				<title>Dokploy</title>
-			</Head>
-			<TooltipProvider>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-					forcedTheme={Component.theme}
-				>
-					<NextTopLoader color="hsl(var(--sidebar-ring))" />
-					<WhitelabelingProvider />
-					<Toaster richColors />
-					<SearchCommand />
-					{getLayout(<Component {...pageProps} />)}
-				</ThemeProvider>
-			</TooltipProvider>
-		</>
-	);
+  return (
+    <>
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+          }
+        `}
+      </style>
+      <Head>
+        <title>Dokploy</title>
+      </Head>
+      <TooltipProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          forcedTheme={Component.theme}
+        >
+          <NextTopLoader color="hsl(var(--sidebar-ring))" />
+          <WhitelabelingProvider />
+          <ItalianLocalizationProvider />
+          <Toaster richColors />
+          <SearchCommand />
+          {getLayout(<Component {...pageProps} />)}
+        </ThemeProvider>
+      </TooltipProvider>
+    </>
+  );
 };
 
 export default api.withTRPC(MyApp);

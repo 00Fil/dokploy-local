@@ -404,14 +404,14 @@ const MENU: Menu = {
     },
     {
       isSingle: true,
-      title: "Support Inbox",
+      title: "Assistenza",
       url: "/dashboard/support",
       icon: MessageSquare,
       isEnabled: ({ auth }) => auth?.role === "owner" || auth?.role === "admin",
     },
     {
       isSingle: true,
-      title: "Organization Style",
+      title: "Stile organizzazione",
       url: "/dashboard/settings/organization-style",
       icon: Paintbrush,
       isEnabled: ({ auth }) => auth?.role === "owner" || auth?.role === "admin",

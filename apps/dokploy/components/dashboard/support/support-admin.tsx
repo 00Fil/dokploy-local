@@ -15,6 +15,12 @@ const statusVariant = {
   closed: "green",
 } as const;
 
+const statusLabel = {
+  open: "Aperta",
+  pending: "In attesa",
+  closed: "Chiusa",
+} as const;
+
 const userLabel = (user: {
   firstName: string;
   lastName: string;
@@ -61,7 +67,9 @@ export function SupportAdmin() {
       await refresh();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to send reply",
+        error instanceof Error
+          ? error.message
+          : "Impossibile inviare la risposta",
       );
     }
   };
@@ -76,9 +84,9 @@ export function SupportAdmin() {
     <div className="grid min-h-[70vh] grid-cols-1 gap-4 lg:grid-cols-[340px_minmax(0,1fr)]">
       <Card className="overflow-hidden">
         <div className="border-b p-4">
-          <h1 className="text-lg font-semibold">Support conversations</h1>
+          <h1 className="text-lg font-semibold">Conversazioni di assistenza</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Manage member requests for this organization.
+            Gestisci le richieste dei membri di questa organizzazione.
           </p>
         </div>
         <ScrollArea className="h-[62vh]">
@@ -86,7 +94,7 @@ export function SupportAdmin() {
             {conversations.length === 0 && (
               <div className="flex flex-col items-center gap-2 px-6 py-16 text-center text-muted-foreground">
                 <Inbox className="size-8" />
-                <p>No support conversations yet.</p>
+                <p>Non ci sono ancora conversazioni di assistenza.</p>
               </div>
             )}
             {conversations.map((item) => (
@@ -104,14 +112,14 @@ export function SupportAdmin() {
                     {userLabel(item.requester)}
                   </p>
                   <Badge variant={statusVariant[item.status]}>
-                    {item.status}
+                    {statusLabel[item.status]}
                   </Badge>
                 </div>
                 <p className="mt-1 truncate text-sm text-muted-foreground">
                   {item.messages[0]?.body || item.subject}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {new Date(item.updatedAt).toLocaleString()}
+                  {new Date(item.updatedAt).toLocaleString("it-IT")}
                 </p>
               </button>
             ))}
@@ -137,21 +145,21 @@ export function SupportAdmin() {
                   variant="outline"
                   onClick={() => void setStatus("open")}
                 >
-                  <Clock3 /> Open
+                  <Clock3 /> Aperta
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => void setStatus("pending")}
                 >
-                  Pending
+                  In attesa
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => void setStatus("closed")}
                 >
-                  <CheckCircle2 /> Close
+                  <CheckCircle2 /> Chiudi
                 </Button>
               </div>
             </div>
@@ -180,7 +188,7 @@ export function SupportAdmin() {
                         </p>
                         <p className="mt-1 text-[11px] opacity-65">
                           {userLabel(message.sender)} ·{" "}
-                          {new Date(message.createdAt).toLocaleString()}
+                          {new Date(message.createdAt).toLocaleString("it-IT")}
                         </p>
                       </div>
                     </div>
@@ -193,7 +201,7 @@ export function SupportAdmin() {
               <Textarea
                 value={reply}
                 onChange={(event) => setReply(event.target.value)}
-                placeholder="Reply to the member…"
+                placeholder="Rispondi al membro…"
                 className="min-h-11 max-h-32 resize-none"
               />
               <Button
@@ -201,7 +209,7 @@ export function SupportAdmin() {
                 onClick={() => void sendReply()}
                 disabled={!reply.trim()}
                 isLoading={replyMutation.isPending}
-                aria-label="Send reply"
+                aria-label="Invia risposta"
               >
                 <Send />
               </Button>
@@ -209,7 +217,7 @@ export function SupportAdmin() {
           </>
         ) : (
           <div className="flex min-h-[60vh] items-center justify-center p-8 text-center text-muted-foreground">
-            Select a conversation to view its messages.
+            Seleziona una conversazione per visualizzare i messaggi.
           </div>
         )}
       </Card>

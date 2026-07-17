@@ -11,7 +11,7 @@ const assertMember = (role: string) => {
   if (role !== "member") {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "Support chat is available to members",
+      message: "La chat di assistenza è disponibile per i membri",
     });
   }
 };
@@ -20,7 +20,8 @@ const assertAdmin = (role: string) => {
   if (role !== "owner" && role !== "admin") {
     throw new TRPCError({
       code: "FORBIDDEN",
-      message: "Only organization administrators can manage support",
+      message:
+        "Solo gli amministratori dell’organizzazione possono gestire l’assistenza",
     });
   }
 };
