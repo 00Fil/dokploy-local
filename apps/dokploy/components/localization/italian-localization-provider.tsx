@@ -1,387 +1,174 @@
 import { useEffect } from "react";
+import {
+  translateItalian,
+  type TranslationContext,
+} from "./italian-translation-engine";
 
-const exact: Record<string, string> = {
-  Home: "Home",
-  Projects: "Progetti",
-  Deployments: "Distribuzioni",
-  Monitoring: "Monitoraggio",
-  Schedules: "Pianificazioni",
-  Requests: "Richieste",
-  Settings: "Impostazioni",
-  Profile: "Profilo",
-  Users: "Utenti",
-  "Remote Servers": "Server remoti",
-  Notifications: "Notifiche",
-  Billing: "Fatturazione",
-  Certificates: "Certificati",
-  Registry: "Registro",
-  Tags: "Etichette",
-  Cluster: "Cluster",
-  "SSH Keys": "Chiavi SSH",
-  "Web Server": "Server web",
-  Documentation: "Documentazione",
-  Support: "Assistenza",
-  Account: "Account",
-  Actions: "Azioni",
-  Action: "Azione",
-  Status: "Stato",
-  Name: "Nome",
-  Description: "Descrizione",
-  Type: "Tipo",
-  Created: "Creato",
-  Updated: "Aggiornato",
-  Active: "Attivo",
-  Inactive: "Inattivo",
-  Enabled: "Abilitato",
-  Disabled: "Disabilitato",
-  Running: "In esecuzione",
-  Stopped: "Arrestato",
-  Failed: "Non riuscito",
-  Pending: "In attesa",
-  Success: "Completato",
-  Error: "Errore",
-  Warning: "Avviso",
-  All: "Tutti",
-  None: "Nessuno",
-  Default: "Predefinito",
-  Custom: "Personalizzato",
-  Advanced: "Avanzate",
-  General: "Generali",
-  Security: "Sicurezza",
-  Domains: "Domini",
-  Environment: "Ambiente",
-  Environments: "Ambienti",
-  Services: "Servizi",
-  Service: "Servizio",
-  Applications: "Applicazioni",
-  Application: "Applicazione",
-  Databases: "Database",
-  Database: "Database",
-  Logs: "Log",
-  Terminal: "Terminale",
-  Backups: "Backup",
-  Variables: "Variabili",
-  Ports: "Porte",
-  Volumes: "Volumi",
-  Network: "Rete",
-  Networks: "Reti",
-  Server: "Server",
-  Organization: "Organizzazione",
-  Organizations: "Organizzazioni",
-  Members: "Membri",
-  Member: "Membro",
-  Admin: "Amministratore",
-  Owner: "Proprietario",
-  Role: "Ruolo",
-  Permissions: "Permessi",
-  Search: "Cerca",
-  Filter: "Filtra",
-  Refresh: "Aggiorna",
-  Save: "Salva",
-  Cancel: "Annulla",
-  Close: "Chiudi",
-  Delete: "Elimina",
-  Remove: "Rimuovi",
-  Edit: "Modifica",
-  Update: "Aggiorna",
-  Create: "Crea",
-  Add: "Aggiungi",
-  Connect: "Connetti",
-  Disconnect: "Disconnetti",
-  Enable: "Abilita",
-  Disable: "Disabilita",
-  Start: "Avvia",
-  Stop: "Arresta",
-  Restart: "Riavvia",
-  Deploy: "Distribuisci",
-  Redeploy: "Distribuisci nuovamente",
-  Continue: "Continua",
-  Back: "Indietro",
-  Next: "Avanti",
-  Previous: "Precedente",
-  Confirm: "Conferma",
-  Copy: "Copia",
-  Download: "Scarica",
-  Upload: "Carica",
-  Select: "Seleziona",
-  Login: "Accedi",
-  Logout: "Esci",
-  Password: "Password",
-  Email: "Email",
-  "Sign in": "Accedi",
-  "Sign out": "Esci",
-  "Forgot password?": "Password dimenticata?",
-  "Reset password": "Reimposta password",
-  "Create account": "Crea account",
-  "No results found.": "Nessun risultato trovato.",
-  "No data available": "Nessun dato disponibile",
-  "Loading...": "Caricamento...",
-  "Please wait": "Attendi",
-  "Copied to clipboard": "Copiato negli appunti",
-  "Are you sure?": "Sei sicuro?",
-  "This action cannot be undone.": "Questa azione non può essere annullata.",
-  "Save changes": "Salva modifiche",
-  "Unsaved changes": "Modifiche non salvate",
-  "Test Connection": "Verifica connessione",
-  "Add Server": "Aggiungi server",
-  "Add Service": "Aggiungi servizio",
-  "Add Domain": "Aggiungi dominio",
-  "Add Variable": "Aggiungi variabile",
-  "Add Port": "Aggiungi porta",
-  "Add Volume": "Aggiungi volume",
-  "Add User": "Aggiungi utente",
-  "Add organization": "Aggiungi organizzazione",
-  "Select Organization": "Seleziona organizzazione",
-  "Pending Invitations": "Inviti in attesa",
-  "Accept Invitation": "Accetta invito",
-  "Delete Organization": "Elimina organizzazione",
-  "Default organization": "Organizzazione predefinita",
-  "Set as default": "Imposta come predefinita",
-  "AI Assistant": "Assistente IA",
-  "AI Settings": "Impostazioni IA",
-  "API Key": "Chiave API",
-  "Access Token": "Token di accesso",
-  "New Project": "Nuovo progetto",
-  "New Service": "Nuovo servizio",
-  "View logs": "Visualizza log",
-  "View details": "Visualizza dettagli",
-  "Last updated": "Ultimo aggiornamento",
-  "Created at": "Creato il",
-  "Updated at": "Aggiornato il",
-};
+const EXCLUDED_SELECTOR = [
+  "code",
+  "pre",
+  "textarea",
+  ".font-mono",
+  "[data-terminal]",
+  "[data-log-line]",
+  "[contenteditable='true']",
+  "[data-no-translate]",
+].join(", ");
 
-const words: Record<string, string> = {
-  add: "aggiungi",
-  create: "crea",
-  update: "aggiorna",
-  delete: "elimina",
-  remove: "rimuovi",
-  save: "salva",
-  cancel: "annulla",
-  close: "chiudi",
-  select: "seleziona",
-  search: "cerca",
-  loading: "caricamento",
-  enabled: "abilitato",
-  disabled: "disabilitato",
-  active: "attivo",
-  inactive: "inattivo",
-  running: "in esecuzione",
-  stopped: "arrestato",
-  failed: "non riuscito",
-  pending: "in attesa",
-  settings: "impostazioni",
-  server: "server",
-  servers: "server",
-  project: "progetto",
-  projects: "progetti",
-  service: "servizio",
-  services: "servizi",
-  application: "applicazione",
-  applications: "applicazioni",
-  user: "utente",
-  users: "utenti",
-  member: "membro",
-  members: "membri",
-  organization: "organizzazione",
-  organizations: "organizzazioni",
-  domain: "dominio",
-  domains: "domini",
-  notification: "notifica",
-  notifications: "notifiche",
-  deployment: "distribuzione",
-  deployments: "distribuzioni",
-  environment: "ambiente",
-  environments: "ambienti",
-  password: "password",
-  name: "nome",
-  description: "descrizione",
-  status: "stato",
-  type: "tipo",
-  role: "ruolo",
-  permission: "permesso",
-  permissions: "permessi",
-  connection: "connessione",
-  configuration: "configurazione",
-  required: "obbligatorio",
-  optional: "facoltativo",
-  advanced: "avanzate",
-  general: "generali",
-  new: "nuovo",
-  previous: "precedente",
-  next: "avanti",
-  back: "indietro",
-  all: "tutti",
-  none: "nessuno",
-  access: "accesso",
-  action: "azione",
-  actions: "azioni",
-  available: "disponibile",
-  backup: "backup",
-  backups: "backup",
-  build: "compilazione",
-  change: "modifica",
-  changes: "modifiche",
-  check: "controlla",
-  choose: "scegli",
-  click: "fai clic",
-  completed: "completato",
-  configure: "configura",
-  configured: "configurato",
-  container: "contenitore",
-  containers: "contenitori",
-  copied: "copiato",
-  copy: "copia",
-  database: "database",
-  databases: "database",
-  date: "data",
-  destination: "destinazione",
-  destinations: "destinazioni",
-  details: "dettagli",
-  download: "scarica",
-  error: "errore",
-  errors: "errori",
-  expires: "scade",
-  file: "file",
-  files: "file",
-  filter: "filtra",
-  found: "trovato",
-  generate: "genera",
-  generated: "generato",
-  history: "cronologia",
-  invitation: "invito",
-  invitations: "inviti",
-  key: "chiave",
-  keys: "chiavi",
-  last: "ultimo",
-  latest: "più recente",
-  logs: "log",
-  manage: "gestisci",
-  memory: "memoria",
-  model: "modello",
-  models: "modelli",
-  network: "rete",
-  networks: "reti",
-  open: "apri",
-  owner: "proprietario",
-  path: "percorso",
-  port: "porta",
-  ports: "porte",
-  provider: "provider",
-  providers: "provider",
-  registry: "registro",
-  repository: "repository",
-  repositories: "repository",
-  request: "richiesta",
-  requests: "richieste",
-  reset: "reimposta",
-  restore: "ripristina",
-  schedule: "pianificazione",
-  schedules: "pianificazioni",
-  secret: "segreto",
-  security: "sicurezza",
-  template: "modello",
-  templates: "modelli",
-  upload: "carica",
-  value: "valore",
-  values: "valori",
-  variable: "variabile",
-  variables: "variabili",
-  version: "versione",
-  volume: "volume",
-  volumes: "volumi",
-  warning: "avviso",
-  invalid: "non valido",
-  valid: "valido",
-  public: "pubblico",
-  private: "privato",
-  remote: "remoto",
-  local: "locale",
-};
+const TRANSLATABLE_ATTRIBUTES = [
+  "placeholder",
+  "title",
+  "aria-label",
+  "aria-description",
+  "data-placeholder",
+] as const;
 
-const phrases: Array<[RegExp, string]> = [
-  [/\bare you sure\b/gi, "sei sicuro"],
-  [
-    /\bthis action cannot be undone\b/gi,
-    "questa azione non può essere annullata",
-  ],
-  [/\bno ([a-z ]+) found\b/gi, "nessun $1 trovato"],
-  [/\bno ([a-z ]+) available\b/gi, "nessun $1 disponibile"],
-  [/\bfailed to\b/gi, "impossibile"],
-  [/\bunable to\b/gi, "impossibile"],
-  [/\bplease wait\b/gi, "attendi"],
-  [/\bclick here\b/gi, "fai clic qui"],
-  [/\blearn more\b/gi, "scopri di più"],
-  [/\bget started\b/gi, "inizia"],
-  [/\btry again\b/gi, "riprova"],
-  [/\bsign in\b/gi, "accedi"],
-  [/\bsign out\b/gi, "esci"],
-  [/\bcopy to clipboard\b/gi, "copia negli appunti"],
-  [/\bsuccessfully\b/gi, "correttamente"],
-];
+type TranslationSnapshot = { source: string; output: string };
 
-const excluded =
-  "code, pre, textarea, .font-mono, [data-terminal], [data-log-line], [contenteditable='true'], [data-no-translate]";
-function translate(value: string) {
-  const leading = value.match(/^\s*/)?.[0] ?? "";
-  const trailing = value.match(/\s*$/)?.[0] ?? "";
-  const core = value.trim();
-  if (!core) return value;
-  if (exact[core]) return leading + exact[core] + trailing;
-  if (core.length > 240 || /[{}<>`]|https?:\/\//.test(core)) return value;
-  let out = core;
-  for (const [pattern, replacement] of phrases) {
-    out = out.replace(pattern, replacement);
-  }
-  for (const [from, to] of Object.entries(words)) {
-    out = out.replace(new RegExp(`\\b${from}\\b`, "gi"), (match) =>
-      match[0] === match[0]?.toUpperCase()
-        ? to.charAt(0).toUpperCase() + to.slice(1)
-        : to,
-    );
-  }
-  return leading + out + trailing;
+function inferContext(element: Element): TranslationContext {
+  if (element.closest("[data-sonner-toast], [role='status'], [role='alert']"))
+    return "notification";
+  if (element.closest("[role='dialog'], [role='alertdialog']")) return "dialog";
+  if (element.closest("option, [role='option'], [role='listbox']")) return "option";
+  if (element.closest("nav, [role='navigation'], [data-sidebar]"))
+    return "navigation";
+  if (element.closest("button, [role='button'], [role='menuitem']")) return "action";
+  if (element.closest("form, label, input, select, [role='combobox']")) return "form";
+  if (element.closest("table, [role='table'], [role='grid']")) return "table";
+  if (
+    element.closest(
+      "[data-status], [data-state], [role='progressbar'], [aria-live='polite']",
+    )
+  )
+    return "status";
+  if (element.closest("p, [data-description]")) return "description";
+  return "generic";
 }
-function process(root: ParentNode) {
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-  const nodes: Text[] = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
-  for (const node of nodes) {
-    const parent = node.parentElement;
-    if (!parent || parent.closest(excluded)) continue;
-    const next = translate(node.data);
-    if (next !== node.data) node.data = next;
-  }
-  const elements =
-    root instanceof Element
-      ? [root, ...root.querySelectorAll("*")]
-      : [...root.querySelectorAll("*")];
-  for (const element of elements) {
-    if (element.closest(excluded)) continue;
-    for (const attr of ["placeholder", "title", "aria-label"]) {
-      const value = element.getAttribute(attr);
-      if (value) element.setAttribute(attr, translate(value));
-    }
-  }
+
+function isExcluded(element: Element) {
+  return Boolean(element.closest(EXCLUDED_SELECTOR));
 }
+
 export function ItalianLocalizationProvider() {
   useEffect(() => {
     document.documentElement.lang = "it";
-    process(document.body);
+
+    const textSnapshots = new WeakMap<Text, TranslationSnapshot>();
+    const attributeSnapshots = new WeakMap<Element, Map<string, TranslationSnapshot>>();
+    const pendingRoots = new Set<Node>();
+    let animationFrame: number | undefined;
+
+    const translateTextNode = (node: Text) => {
+      const parent = node.parentElement;
+      if (!parent || isExcluded(parent)) return;
+
+      const previous = textSnapshots.get(node);
+      if (previous?.output === node.data) return;
+
+      const source = node.data;
+      const output = translateItalian(source, inferContext(parent));
+      textSnapshots.set(node, { source, output });
+      if (output !== source) node.data = output;
+    };
+
+    const translateAttributes = (element: Element) => {
+      if (isExcluded(element)) return;
+      const context = inferContext(element);
+      const snapshots = attributeSnapshots.get(element) ?? new Map();
+
+      for (const attribute of TRANSLATABLE_ATTRIBUTES) {
+        const current = element.getAttribute(attribute);
+        if (!current) continue;
+
+        const previous = snapshots.get(attribute);
+        if (previous?.output === current) continue;
+
+        const output = translateItalian(current, context);
+        snapshots.set(attribute, { source: current, output });
+        if (output !== current) element.setAttribute(attribute, output);
+      }
+
+      if (
+        element instanceof HTMLInputElement &&
+        ["button", "reset", "submit"].includes(element.type) &&
+        element.value
+      ) {
+        const attribute = "value";
+        const current = element.value;
+        const previous = snapshots.get(attribute);
+        if (previous?.output !== current) {
+          const output = translateItalian(current, "action");
+          snapshots.set(attribute, { source: current, output });
+          if (output !== current) element.value = output;
+        }
+      }
+
+      attributeSnapshots.set(element, snapshots);
+    };
+
+    const processRoot = (root: Node) => {
+      if (root instanceof Text) {
+        translateTextNode(root);
+        return;
+      }
+      if (!(root instanceof Element || root instanceof DocumentFragment)) return;
+
+      if (root instanceof Element) translateAttributes(root);
+
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+      );
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node instanceof Text) translateTextNode(node);
+        else if (node instanceof Element) translateAttributes(node);
+      }
+    };
+
+    const flush = () => {
+      animationFrame = undefined;
+      const roots = [...pendingRoots];
+      pendingRoots.clear();
+      for (const root of roots) processRoot(root);
+    };
+
+    const schedule = (root: Node) => {
+      pendingRoots.add(root);
+      if (animationFrame === undefined)
+        animationFrame = window.requestAnimationFrame(flush);
+    };
+
+    processRoot(document.body);
+
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (mutation.type === "characterData" && mutation.target.parentNode)
-          process(mutation.target.parentNode);
-        for (const node of mutation.addedNodes)
-          if (node instanceof Element) process(node);
+        if (mutation.type === "characterData") {
+          schedule(mutation.target);
+          continue;
+        }
+        if (mutation.type === "attributes") {
+          schedule(mutation.target);
+          continue;
+        }
+        for (const node of mutation.addedNodes) schedule(node);
       }
     });
+
     observer.observe(document.body, {
+      attributeFilter: [...TRANSLATABLE_ATTRIBUTES],
+      attributes: true,
+      characterData: true,
       childList: true,
       subtree: true,
-      characterData: true,
     });
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      if (animationFrame !== undefined) window.cancelAnimationFrame(animationFrame);
+      pendingRoots.clear();
+    };
   }, []);
+
   return null;
 }
