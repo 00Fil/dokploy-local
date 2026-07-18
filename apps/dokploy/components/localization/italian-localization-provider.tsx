@@ -213,10 +213,115 @@ const words: Record<string, string> = {
   back: "indietro",
   all: "tutti",
   none: "nessuno",
+  access: "accesso",
+  action: "azione",
+  actions: "azioni",
+  available: "disponibile",
+  backup: "backup",
+  backups: "backup",
+  build: "compilazione",
+  change: "modifica",
+  changes: "modifiche",
+  check: "controlla",
+  choose: "scegli",
+  click: "fai clic",
+  completed: "completato",
+  configure: "configura",
+  configured: "configurato",
+  container: "contenitore",
+  containers: "contenitori",
+  copied: "copiato",
+  copy: "copia",
+  database: "database",
+  databases: "database",
+  date: "data",
+  destination: "destinazione",
+  destinations: "destinazioni",
+  details: "dettagli",
+  download: "scarica",
+  error: "errore",
+  errors: "errori",
+  expires: "scade",
+  file: "file",
+  files: "file",
+  filter: "filtra",
+  found: "trovato",
+  generate: "genera",
+  generated: "generato",
+  history: "cronologia",
+  invitation: "invito",
+  invitations: "inviti",
+  key: "chiave",
+  keys: "chiavi",
+  last: "ultimo",
+  latest: "più recente",
+  logs: "log",
+  manage: "gestisci",
+  memory: "memoria",
+  model: "modello",
+  models: "modelli",
+  network: "rete",
+  networks: "reti",
+  open: "apri",
+  owner: "proprietario",
+  path: "percorso",
+  port: "porta",
+  ports: "porte",
+  provider: "provider",
+  providers: "provider",
+  registry: "registro",
+  repository: "repository",
+  repositories: "repository",
+  request: "richiesta",
+  requests: "richieste",
+  reset: "reimposta",
+  restore: "ripristina",
+  schedule: "pianificazione",
+  schedules: "pianificazioni",
+  secret: "segreto",
+  security: "sicurezza",
+  template: "modello",
+  templates: "modelli",
+  upload: "carica",
+  value: "valore",
+  values: "valori",
+  variable: "variabile",
+  variables: "variabili",
+  version: "versione",
+  volume: "volume",
+  volumes: "volumi",
+  warning: "avviso",
+  invalid: "non valido",
+  valid: "valido",
+  public: "pubblico",
+  private: "privato",
+  remote: "remoto",
+  local: "locale",
 };
 
+const phrases: Array<[RegExp, string]> = [
+  [/\bare you sure\b/gi, "sei sicuro"],
+  [
+    /\bthis action cannot be undone\b/gi,
+    "questa azione non può essere annullata",
+  ],
+  [/\bno ([a-z ]+) found\b/gi, "nessun $1 trovato"],
+  [/\bno ([a-z ]+) available\b/gi, "nessun $1 disponibile"],
+  [/\bfailed to\b/gi, "impossibile"],
+  [/\bunable to\b/gi, "impossibile"],
+  [/\bplease wait\b/gi, "attendi"],
+  [/\bclick here\b/gi, "fai clic qui"],
+  [/\blearn more\b/gi, "scopri di più"],
+  [/\bget started\b/gi, "inizia"],
+  [/\btry again\b/gi, "riprova"],
+  [/\bsign in\b/gi, "accedi"],
+  [/\bsign out\b/gi, "esci"],
+  [/\bcopy to clipboard\b/gi, "copia negli appunti"],
+  [/\bsuccessfully\b/gi, "correttamente"],
+];
+
 const excluded =
-  "code, pre, textarea, [contenteditable='true'], [data-no-translate]";
+  "code, pre, textarea, .font-mono, [data-terminal], [data-log-line], [contenteditable='true'], [data-no-translate]";
 function translate(value: string) {
   const leading = value.match(/^\s*/)?.[0] ?? "";
   const trailing = value.match(/\s*$/)?.[0] ?? "";
@@ -225,6 +330,9 @@ function translate(value: string) {
   if (exact[core]) return leading + exact[core] + trailing;
   if (core.length > 240 || /[{}<>`]|https?:\/\//.test(core)) return value;
   let out = core;
+  for (const [pattern, replacement] of phrases) {
+    out = out.replace(pattern, replacement);
+  }
   for (const [from, to] of Object.entries(words)) {
     out = out.replace(new RegExp(`\\b${from}\\b`, "gi"), (match) =>
       match[0] === match[0]?.toUpperCase()
@@ -258,6 +366,7 @@ function process(root: ParentNode) {
 }
 export function ItalianLocalizationProvider() {
   useEffect(() => {
+    document.documentElement.lang = "it";
     process(document.body);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
